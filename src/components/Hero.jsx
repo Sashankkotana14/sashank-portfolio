@@ -1,115 +1,75 @@
-import { useEffect, useState } from "react";
-import Icon from "./Icons.jsx";
-import { profile, typedRoles } from "../data.js";
+import { useState } from "react";
+import { FaGithub, FaLinkedin, FaEnvelope, FaPaperPlane, FaDownload } from "react-icons/fa";
+import { profile } from "../data/portfolio";
+import { quickQuestions } from "../utils/assistant";
+import { useTyping } from "../utils/hooks";
 
-function useTypewriter(words) {
-  const [text, setText] = useState("");
+export default function Hero({ onAsk }) {
+  const typed = useTyping(profile.typingRoles);
+  const [query, setQuery] = useState("");
 
-  useEffect(() => {
-    let wordIndex = 0;
-    let charIndex = 0;
-    let deleting = false;
-    let timer;
-
-    const tick = () => {
-      const word = words[wordIndex];
-      setText(word.slice(0, charIndex));
-      let delay = deleting ? 35 : 75;
-
-      if (!deleting && charIndex === word.length) {
-        deleting = true;
-        delay = 1500;
-      } else if (deleting && charIndex === 0) {
-        deleting = false;
-        wordIndex = (wordIndex + 1) % words.length;
-        delay = 350;
-      } else {
-        charIndex += deleting ? -1 : 1;
-      }
-      timer = setTimeout(tick, delay);
-    };
-
-    tick();
-    return () => clearTimeout(timer);
-  }, [words]);
-
-  return text;
-}
-
-export default function Hero() {
-  const typed = useTypewriter(typedRoles);
+  const submit = (e) => {
+    e.preventDefault();
+    if (query.trim()) {
+      onAsk(query.trim());
+      setQuery("");
+    }
+  };
 
   return (
     <section id="home" className="hero">
-      <div className="container hero-grid">
-        <div className="hero-copy">
-          <span className="eyebrow">
-            <span className="pulse-dot" /> Available for opportunities
-          </span>
-          <p className="hero-hello">Hi, I'm</p>
-          <h1 className="hero-name">
-            <span className="gradient-text">{profile.name}</span>
-          </h1>
-          <p className="hero-role" aria-live="off">
-            <span>{typed}</span>
-            <span className="caret" aria-hidden="true" />
-          </p>
-          <p className="hero-text">{profile.tagline}</p>
+      <div className="container hero-inner">
+        <span className="badge">Welcome to my portfolio</span>
+        <p className="hero-hello">Hi, I'm</p>
+        <h1 className="hero-name">{profile.name}</h1>
+        <p className="hero-typing">
+          <span>{typed}</span>
+          <span className="cursor" aria-hidden="true">|</span>
+        </p>
 
-          <div className="hero-cta">
-            <a href="#projects" className="btn btn-primary">
-              View Projects <Icon name="arrowRight" size={18} />
+        <div className="hero-buttons">
+          <a href="#projects" className="btn btn-primary">View Projects</a>
+          <a href="#contact" className="btn btn-outline">Contact Me</a>
+          {profile.resume && (
+            <a href={profile.resume} download className="btn btn-outline">
+              <FaDownload /> Resume
             </a>
-            <a href="#contact" className="btn btn-ghost">
-              Contact Me
-            </a>
-          </div>
-
-          <div className="hero-socials">
-            <a
-              href={profile.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="GitHub"
-            >
-              <Icon name="github" size={20} />
-            </a>
-            <a
-              href={profile.linkedin}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="LinkedIn"
-            >
-              <Icon name="linkedin" size={20} />
-            </a>
-            <a href={`mailto:${profile.email}`} aria-label="Email">
-              <Icon name="mail" size={20} />
-            </a>
-          </div>
+          )}
         </div>
 
-        <div className="hero-visual" aria-hidden="true">
-          <div className="avatar-wrap">
-            <div className="glow-orb" />
-            <div className="orbit orbit-1">
-              <span className="orbit-dot" />
-            </div>
-            <div className="orbit orbit-2">
-              <span className="orbit-dot" />
-            </div>
-            <div className="avatar">
-              <span className="avatar-text">{profile.initials}</span>
-            </div>
-            <span className="float-chip chip-a">Python</span>
-            <span className="float-chip chip-b">Machine Learning</span>
-            <span className="float-chip chip-c">C++</span>
-          </div>
+        {/* Assistant search box, inspired by the reference video */}
+        <form className="ask-box" onSubmit={submit}>
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Ask my portfolio assistant anything…"
+            aria-label="Ask the portfolio assistant"
+          />
+          <button type="submit" aria-label="Send question">
+            <FaPaperPlane />
+          </button>
+        </form>
+        <div className="chips">
+          {quickQuestions.map((q) => (
+            <button key={q.label} className="chip" onClick={() => onAsk(q.question)}>
+              {q.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="socials">
+          <a href={profile.github} target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+            <FaGithub />
+          </a>
+          <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+            <FaLinkedin />
+          </a>
+          <a href={`mailto:${profile.email}`} aria-label="Email">
+            <FaEnvelope />
+          </a>
         </div>
       </div>
-
-      <a href="#about" className="scroll-hint" aria-label="Scroll to About">
-        <Icon name="chevronDown" size={22} />
-      </a>
     </section>
   );
 }

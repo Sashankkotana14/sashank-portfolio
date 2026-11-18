@@ -1,48 +1,27 @@
-import Icon from "./Icons.jsx";
-import { navLinks, profile } from "../data.js";
+import { FaGithub, FaLinkedin, FaEnvelope } from "react-icons/fa";
+import { profile } from "../data/portfolio";
+import { sections } from "./Navbar.jsx";
 
 export default function Footer() {
   return (
     <footer className="footer">
       <div className="container footer-inner">
-        <div className="footer-brand">
-          <span className="brand-mark">{profile.initials}</span>
-          <p>{profile.role}</p>
+        <div>
+          <a href="#home" className="logo">{profile.initials}</a>
+          <p>{profile.name} · {profile.title}</p>
         </div>
-
-        <ul className="footer-links">
-          {navLinks.map((link) => (
-            <li key={link.id}>
-              <a href={`#${link.id}`}>{link.label}</a>
-            </li>
+        <nav className="footer-links" aria-label="Footer navigation">
+          {sections.map((s) => (
+            <a key={s.id} href={`#${s.id}`}>{s.label}</a>
           ))}
-        </ul>
-
-        <div className="footer-socials">
-          <a
-            href={profile.github}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="GitHub"
-          >
-            <Icon name="github" size={18} />
-          </a>
-          <a
-            href={profile.linkedin}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="LinkedIn"
-          >
-            <Icon name="linkedin" size={18} />
-          </a>
-          <a href={`mailto:${profile.email}`} aria-label="Email">
-            <Icon name="mail" size={18} />
-          </a>
+        </nav>
+        <div className="socials">
+          <a href={profile.github} target="_blank" rel="noopener noreferrer" aria-label="GitHub"><FaGithub /></a>
+          <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><FaLinkedin /></a>
+          <a href={`mailto:${profile.email}`} aria-label="Email"><FaEnvelope /></a>
         </div>
       </div>
-      <p className="copyright">
-        © {new Date().getFullYear()} {profile.name}. All rights reserved.
-      </p>
+      <p className="copyright">© {new Date().getFullYear()} {profile.name}. All rights reserved.</p>
     </footer>
   );
 }

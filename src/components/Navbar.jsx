@@ -1,120 +1,59 @@
-import { useEffect, useState } from "react";
-import Icon from "./Icons.jsx";
-import { navLinks, profile } from "../data.js";
+import { useState } from "react";
+import { FaBars, FaTimes, FaRobot } from "react-icons/fa";
+import { profile } from "../data/portfolio";
+import { useActiveSection } from "../utils/hooks";
 
-export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [active, setActive] = useState("home");
-  const [progress, setProgress] = useState(0);
+export const sections = [
+  { id: "home", label: "Home" },
+  { id: "about", label: "About" },
+  { id: "education", label: "Education" },
+  { id: "skills", label: "Skills" },
+  { id: "projects", label: "Projects" },
+  { id: "certifications", label: "Certificates" },
+  { id: "achievements", label: "Achievements" },
+  { id: "contact", label: "Contact" },
+];
 
-  // Scroll state + progress bar
-  useEffect(() => {
-    let ticking = false;
-    const update = () => {
-      const doc = document.documentElement;
-      const max = doc.scrollHeight - window.innerHeight;
-      setScrolled(window.scrollY > 24);
-      setProgress(max > 0 ? Math.min(100, (window.scrollY / max) * 100) : 0);
-      ticking = false;
-    };
-    const onScroll = () => {
-      if (!ticking) {
-        ticking = true;
-        requestAnimationFrame(update);
-      }
-    };
-    update();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+const ids = sections.map((s) => s.id);
 
-  // Highlight the link for the section in view
-  useEffect(() => {
-    const ids = ["home", ...navLinks.map((l) => l.id)];
-    const elements = ids
-      .map((id) => document.getElementById(id))
-      .filter(Boolean);
-    if (!elements.length || !("IntersectionObserver" in window)) {
-      return undefined;
-    }
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) setActive(entry.target.id);
-        });
-      },
-      { rootMargin: "-45% 0px -50% 0px" }
-    );
-    elements.forEach((el) => io.observe(el));
-    return () => io.disconnect();
-  }, []);
-
-  // Close the mobile menu with Escape and when resizing to desktop
-  useEffect(() => {
-    const onKey = (e) => e.key === "Escape" && setOpen(false);
-    const onResize = () => window.innerWidth > 900 && setOpen(false);
-    window.addEventListener("keydown", onKey);
-    window.addEventListener("resize", onResize);
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      window.removeEventListener("resize", onResize);
-    };
-  }, []);
+export default function Navbar({ onOpenChat }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const active = useActiveSection(ids);
 
   return (
-    <header className={`navbar ${scrolled ? "is-scrolled" : ""}`}>
-      <div className="nav-progress" style={{ width: `${progress}%` }} />
-      <nav className="container nav-inner" aria-label="Main navigation">
-        <a href="#home" className="brand" onClick={() => setOpen(false)}>
-          <span className="brand-mark">{profile.initials}</span>
-          <span className="brand-name">{profile.name}</span>
+    <header className="navbar">
+      <div className="nav-inner">
+        <a href="#home" className="logo" onClick={() => setMenuOpen(false)}>
+          {profile.initials}
         </a>
 
-        <ul className={`nav-links ${open ? "is-open" : ""}`}>
-          {navLinks.map((link) => (
-            <li key={link.id}>
-              <a
-                href={`#${link.id}`}
-                className={active === link.id ? "is-active" : ""}
-                aria-current={active === link.id ? "page" : undefined}
-                onClick={() => setOpen(false)}
-              >
-                {link.label}
-              </a>
-            </li>
+        <nav className={`nav-links ${menuOpen ? "open" : ""}`} aria-label="Main navigation">
+          {sections.map((s) => (
+            <a
+              key={s.id}
+              href={`#${s.id}`}
+              className={active === s.id ? "active" : ""}
+              onClick={() => setMenuOpen(false)}
+            >
+              {s.label}
+            </a>
           ))}
-        </ul>
+        </nav>
 
-        <div className="nav-socials">
-          <a
-            href={profile.github}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="GitHub profile"
+        <div className="nav-actions">
+          <button className="chat-toggle" onClick={onOpenChat} aria-label="Open portfolio assistant">
+            <FaRobot /> <span>Ask AI</span>
+          </button>
+          <button
+            className="menu-btn"
+            onClick={() => setMenuOpen((o) => !o)}
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
           >
-            <Icon name="github" size={18} />
-          </a>
-          <a
-            href={profile.linkedin}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="LinkedIn profile"
-          >
-            <Icon name="linkedin" size={18} />
-          </a>
+            {menuOpen ? <FaTimes /> : <FaBars />}
+          </button>
         </div>
-
-        <button
-          type="button"
-          className="nav-toggle"
-          aria-label={open ? "Close menu" : "Open menu"}
-          aria-expanded={open}
-          onClick={() => setOpen((v) => !v)}
-        >
-          <Icon name={open ? "close" : "menu"} size={24} />
-        </button>
-      </nav>
+      </div>
     </header>
   );
 }

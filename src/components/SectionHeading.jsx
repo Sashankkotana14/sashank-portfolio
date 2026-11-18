@@ -1,11 +1,13 @@
 import Reveal from "./Reveal.jsx";
 
-export default function SectionHeading({ eyebrow, title, text }) {
+export default function SectionHeading({ title, subtitle }) {
   return (
     <Reveal className="section-heading">
-      {eyebrow && <span className="eyebrow">{eyebrow}</span>}
-      <h2>{title}</h2>
-      {text && <p>{text}</p>}
+      <h2>
+        {title}
+      </h2>
+      <span className="heading-line" />
+      {subtitle && <p>{subtitle}</p>}
     </Reveal>
   );
 }

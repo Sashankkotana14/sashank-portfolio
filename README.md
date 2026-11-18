@@ -1,137 +1,106 @@
-# Kotana Sashank — Portfolio
+# Kotana Sashank – Portfolio Website
 
-A dark, space-themed personal portfolio built with **React + Vite**. It features a twinkling starfield with shooting stars, purple/blue glowing nebulae, a KS initials avatar, scroll-reveal animations, cursor-glow cards, a working navigation bar, and a contact form that opens your email app.
+A responsive, dark-themed (black + neon pink) personal portfolio built with **React** and **Vite**.
 
-## Sections
+**Sections:** Home · About · Education · Skills · Projects · Certifications · Achievements · Contact
+**Extras:** typing animation, scroll-reveal animations, glowing buttons, project filter, portfolio assistant chat, validated contact form, mobile menu.
 
-Hero · About · Skills · Education timeline · Projects · Experience (Fresher) · Certificates & Achievements · Contact · Footer
+---
 
-## Tech stack
+## 1. What you need
 
-- React 19 and Vite 7
-- Plain CSS (no CSS framework) and small custom hooks for animations
-- No extra animation library is required: all effects use CSS, `IntersectionObserver` and `<canvas>`
+- [Node.js](https://nodejs.org) **version 18 or newer** (download the LTS version)
+- [VS Code](https://code.visualstudio.com) (or any editor)
 
-## Requirements
+Check Node is installed: open a terminal and run `node -v`.
 
-- [Node.js](https://nodejs.org/) **22.12 or newer** (or 20.19+), which includes npm
+## 2. Run it locally (VS Code)
 
-## Install and run
+1. Unzip the project and open the folder in VS Code (**File → Open Folder**).
+2. Open the terminal in VS Code (**Terminal → New Terminal**).
+3. Install the packages (only needed once):
+   ```bash
+   npm install
+   ```
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
+5. Open the address shown in the terminal (usually http://localhost:5173). The page refreshes automatically when you save a file.
 
-```bash
-# 1. Open a terminal in this folder
-cd sashank-portfolio
+Other commands:
 
-# 2. Install dependencies
-npm install
+| Command           | What it does                                  |
+| ----------------- | --------------------------------------------- |
+| `npm run dev`     | Start the site locally while you edit         |
+| `npm run build`   | Create the production version in `dist/`     |
+| `npm run preview` | Preview the production build locally          |
 
-# 3. Start the development server
-npm run dev
-```
+## 3. How to edit your content
 
-Open the address shown in the terminal (usually http://localhost:5173).
+**Almost everything is in one file: `src/data/portfolio.js`.**
 
-### Production build
+| I want to…                         | Edit this                                               |
+| ---------------------------------- | ------------------------------------------------------- |
+| Change my name, about text, links  | `profile` in `src/data/portfolio.js`                    |
+| Change typing-animation words      | `profile.typingRoles`                                   |
+| Add a project description / tags   | `projects` in `src/data/portfolio.js`                   |
+| Add a project's GitHub link        | set `github: "https://github.com/..."` on that project  |
+| Add or remove skills               | `skillGroups` (icons are listed in `Skills.jsx`)        |
+| Add certificate files              | see below                                               |
+| Change colours                     | the `:root` block at the top of `src/index.css`         |
 
-```bash
-npm run build     # creates the dist/ folder
-npm run preview   # serves the production build locally
-```
+### Add your resume (shows a "Resume" button in the hero)
+1. Copy your PDF into the `public/` folder and name it `resume.pdf`.
+2. In `src/data/portfolio.js` change `resume: null` to `resume: "/resume.pdf"`.
 
-## Customising your content
+### Add certificate images or PDFs (shows a "View" button on the card)
+1. Create `public/certificates/` and copy your files in (for example `aws.pdf`).
+2. In `src/data/portfolio.js` set `file: "/certificates/aws.pdf"` on that certificate.
 
-All text lives in **`src/data.js`**:
+### Project GitHub links
+Until you add a repository link, the project button opens your GitHub repositories page so it is never broken.
 
-- `profile`: name, email, GitHub, LinkedIn, about text
-- `skillGroups`, `education`, `projects`, `experience`, `certificates`
+### Contact form
+The site has no server. When a visitor fills in the form correctly, their email app opens with the message ready to send to your email address. To receive messages directly in the page later, you can connect a service such as Formspree or EmailJS.
 
-**Project links:** every project button currently points to your GitHub profile, because individual repository URLs were not provided. When a repository is ready, set it in `src/data.js`:
-
-```js
-{
-  title: "ScamShield AI",
-  repo: "https://github.com/Sashankkotana14/your-repo-name",
-  ...
-}
-```
-
-**Project descriptions and tags** were written from the project names, so please review them and edit them to match what you actually built.
-
-## Project structure
+## 4. Folder structure
 
 ```
 sashank-portfolio/
-├── index.html
-├── package.json
-├── vite.config.js
-├── public/
-│   └── favicon.svg
+├── index.html            Page shell, fonts, title
+├── package.json          Dependencies and scripts
+├── vite.config.js        Vite settings
+├── public/               Files served as-is (favicon, resume, certificates)
 └── src/
-    ├── main.jsx
-    ├── App.jsx
-    ├── data.js              <- edit your content here
-    ├── styles.css
-    └── components/
-        ├── Starfield.jsx    (canvas background)
-        ├── Navbar.jsx
-        ├── Hero.jsx
-        ├── About.jsx
-        ├── Skills.jsx
-        ├── Education.jsx
-        ├── Projects.jsx
-        ├── Experience.jsx
-        ├── Certificates.jsx
-        ├── Contact.jsx
-        ├── Footer.jsx
-        ├── BackToTop.jsx
-        ├── GlowCard.jsx
-        ├── Reveal.jsx
-        ├── SectionHeading.jsx
-        └── Icons.jsx
+    ├── main.jsx          App entry point
+    ├── App.jsx           Puts all sections together
+    ├── index.css         All styles and colours
+    ├── data/portfolio.js ★ Your content
+    ├── utils/
+    │   ├── assistant.js  Answers for the chat assistant (uses only your data)
+    │   └── hooks.js      Typing effect + active-menu helper
+    └── components/       One file per section (Hero, About, Skills, ...)
 ```
 
-## Upload to GitHub
+## 5. Deploy to Vercel (free)
 
-1. Create a new **empty** repository on GitHub (for example `portfolio`), without a README.
-2. In the project folder, run:
+**Option A – with GitHub (recommended)**
+1. Create a new repository on GitHub and upload this project (do not upload `node_modules`; `.gitignore` already excludes it).
+2. Go to [vercel.com](https://vercel.com) and sign in with GitHub.
+3. Click **Add New → Project**, then **Import** your repository.
+4. Vercel detects Vite automatically (Build command `npm run build`, Output directory `dist`). Click **Deploy**.
+5. After about a minute you get a live link like `https://your-project.vercel.app`. Every time you push changes to GitHub, the site updates automatically.
 
-```bash
-git init
-git add .
-git commit -m "Initial commit: portfolio website"
-git branch -M main
-git remote add origin https://github.com/Sashankkotana14/portfolio.git
-git push -u origin main
-```
-
-Replace `portfolio` with your repository name. The `.gitignore` already excludes `node_modules` and `dist`.
-
-## Deploy to Vercel
-
-**Option A: from GitHub (recommended)**
-
-1. Go to [vercel.com](https://vercel.com) and sign in with GitHub.
-2. Click **Add New → Project** and import your portfolio repository.
-3. Vercel detects Vite automatically. Confirm these settings:
-   - Framework Preset: **Vite**
-   - Build Command: `npm run build`
-   - Output Directory: `dist`
-4. Click **Deploy**. Every `git push` to `main` will redeploy automatically.
-
-**Option B: Vercel CLI**
-
+**Option B – with the Vercel CLI**
 ```bash
 npm install -g vercel
 vercel          # follow the prompts
 vercel --prod   # publish to production
 ```
 
-## Contact form
+## 6. Troubleshooting
 
-The form needs no backend. On submit it opens the visitor's email app with a message addressed to your email, pre-filled with their name, email and text.
-
-## Troubleshooting
-
-- **`npm install` fails:** check your Node version with `node -v` and upgrade if it is below 20.19.
-- **Blank page after deploy:** make sure Vercel's output directory is `dist`.
-- **Fonts look different offline:** the Inter and Space Grotesk fonts load from Google Fonts and fall back to system fonts when offline.
+- **`npm` is not recognized** – install Node.js, then restart VS Code.
+- **Port already in use** – Vite will pick another port; use the address it prints.
+- **Blank page after deploy** – make sure the build command is `npm run build` and the output directory is `dist`.

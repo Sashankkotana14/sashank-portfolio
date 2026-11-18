@@ -1,44 +1,36 @@
 import { useEffect, useRef, useState } from "react";
 
-// Fades and slides content in the first time it scrolls into view.
-export default function Reveal({
-  as: Tag = "div",
-  delay = 0,
-  className = "",
-  children,
-  ...rest
-}) {
+// Wrap anything in <Reveal> to fade/slide it in when it scrolls into view.
+export default function Reveal({ children, delay = 0, className = "" }) {
   const ref = useRef(null);
-  const [shown, setShown] = useState(false);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     const el = ref.current;
-    if (!el) return undefined;
-    if (!("IntersectionObserver" in window)) {
-      setShown(true);
-      return undefined;
+    if (!el || typeof IntersectionObserver === "undefined") {
+      setVisible(true);
+      return;
     }
-    const io = new IntersectionObserver(
+    const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setShown(true);
-          io.disconnect();
+          setVisible(true);
+          observer.disconnect();
         }
       },
       { threshold: 0.12 }
     );
-    io.observe(el);
-    return () => io.disconnect();
+    observer.observe(el);
+    return () => observer.disconnect();
   }, []);
 
   return (
-    <Tag
+    <div
       ref={ref}
-      className={`reveal ${shown ? "is-visible" : ""} ${className}`.trim()}
-      style={{ "--delay": `${delay}ms` }}
-      {...rest}
+      className={`reveal ${visible ? "visible" : ""} ${className}`}
+      style={{ transitionDelay: `${delay}ms` }}
     >
       {children}
-    </Tag>
+    </div>
   );
 }
